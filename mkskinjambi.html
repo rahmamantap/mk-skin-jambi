@@ -48,20 +48,6 @@
       </form>
     </div>
 
-    <!-- Tabel Stok -->
-    <div class="bg-white p-6 rounded shadow mb-8">
-      <h2 class="text-xl font-semibold mb-4">Stok Saat Ini</h2>
-      <table class="w-full table-auto border">
-        <thead>
-          <tr class="bg-gray-200">
-            <th class="px-4 py-2">Produk</th>
-            <th class="px-4 py-2">Jumlah</th>
-          </tr>
-        </thead>
-        <tbody id="tabelStok"></tbody>
-      </table>
-    </div>
-
     <!-- Total Penjualan -->
     <div class="bg-white p-6 rounded shadow mb-4">
       <h2 class="text-xl font-semibold mb-4">Total Uang Penjualan</h2>
@@ -87,15 +73,9 @@
     let totalModal = Number(localStorage.getItem("totalModal")) || 0;
 
     function updateUI() {
-      const tabelStok = document.getElementById("tabelStok");
       const totalUangEl = document.getElementById("totalUang");
       const totalModalEl = document.getElementById("totalModal");
       const totalUntungEl = document.getElementById("totalUntung");
-
-      tabelStok.innerHTML = "";
-      for (const [produk, jumlah] of Object.entries(stok)) {
-        tabelStok.innerHTML += `<tr><td class="border px-4 py-2">${produk}</td><td class="border px-4 py-2">${jumlah}</td></tr>`;
-      }
 
       totalUangEl.textContent = totalUang.toLocaleString("id-ID");
       totalModalEl.textContent = totalModal.toLocaleString("id-ID");
@@ -146,4 +126,3 @@
   </script>
 </body>
 </html>
-
