@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard MK Skin Jambi</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background-color: #f5f0eb; }
+    .coklat-muda { background-color: #d2b48c; }
+    .coklat-tua { background-color: #8b5e3c; }
+  </style>
+</head>
+<body class="text-gray-800 font-sans">
+  <div class="max-w-4xl mx-auto py-10 px-4">
+    <div class="text-center mb-8 coklat-tua text-white p-4 rounded">
+      <h1 class="text-3xl font-bold">Dashboard MK Skin Jambi</h1>
+      <p class="text-sm mt-1">by Rahma Andini Octavia</p>
+    </div>
+
+    <!-- Form Barang Masuk -->
+    <div class="bg-white p-6 rounded shadow mb-8">
+      <h2 class="text-xl font-semibold mb-4">Input Barang Masuk</h2>
+      <form id="formMasuk" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <input type="text" placeholder="Nama Produk" id="produkMasuk" class="border p-2 rounded" required>
+        <input type="number" placeholder="Jumlah" id="jumlahMasuk" class="border p-2 rounded" required>
+        <button type="submit" class="coklat-muda text-white px-4 py-2 rounded">Tambah</button>
+      </form>
+    </div>
+
+    <!-- Form Barang Keluar -->
+    <div class="bg-white p-6 rounded shadow mb-8">
+      <h2 class="text-xl font-semibold mb-4">Input Barang Keluar (Penjualan)</h2>
+      <form id="formKeluar" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <input type="text" placeholder="Nama Produk" id="produkKeluar" class="border p-2 rounded" required>
+        <input type="number" placeholder="Jumlah" id="jumlahKeluar" class="border p-2 rounded" required>
+        <input type="number" placeholder="Harga per Produk" id="hargaKeluar" class="border p-2 rounded" required>
+        <button type="submit" class="coklat-tua text-white px-4 py-2 rounded">Jual</button>
+      </form>
+    </div>
+
+    <!-- Form Modal (Uang Keluar) -->
+    <div class="bg-white p-6 rounded shadow mb-8">
+      <h2 class="text-xl font-semibold mb-4">Input Modal (Uang Keluar untuk Beli Barang)</h2>
+      <form id="formModal" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <input type="number" placeholder="Jumlah Uang Keluar" id="uangKeluar" class="border p-2 rounded" required>
+        <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded">Tambah Modal</button>
+      </form>
+    </div>
+
+    <!-- Tabel Stok -->
+    <div class="bg-white p-6 rounded shadow mb-8">
+      <h2 class="text-xl font-semibold mb-4">Stok Saat Ini</h2>
+      <table class="w-full table-auto border">
+        <thead>
+          <tr class="bg-gray-200">
+            <th class="px-4 py-2">Produk</th>
+            <th class="px-4 py-2">Jumlah</th>
+          </tr>
+        </thead>
+        <tbody id="tabelStok"></tbody>
+      </table>
+    </div>
+
+    <!-- Total Penjualan -->
+    <div class="bg-white p-6 rounded shadow mb-4">
+      <h2 class="text-xl font-semibold mb-4">Total Uang Penjualan</h2>
+      <p class="text-2xl font-bold text-green-600">Rp <span id="totalUang">0</span></p>
+    </div>
+
+    <!-- Total Modal (Uang Keluar) -->
+    <div class="bg-white p-6 rounded shadow mb-4">
+      <h2 class="text-xl font-semibold mb-4">Total Uang Modal (Keluar)</h2>
+      <p class="text-2xl font-bold text-red-600">Rp <span id="totalModal">0</span></p>
+    </div>
+
+    <!-- Total Keuntungan -->
+    <div class="bg-white p-6 rounded shadow mb-8">
+      <h2 class="text-xl font-semibold mb-4">Total Keuntungan</h2>
+      <p class="text-2xl font-bold text-blue-600">Rp <span id="totalUntung">0</span></p>
+    </div>
+  </div>
+
+  <script>
+    let stok = JSON.parse(localStorage.getItem("stok")) || {};
+    let totalUang = Number(localStorage.getItem("totalUang")) || 0;
+    let totalModal = Number(localStorage.getItem("totalModal")) || 0;
+
+    function updateUI() {
+      const tabelStok = document.getElementById("tabelStok");
+      const totalUangEl = document.getElementById("totalUang");
+      const totalModalEl = document.getElementById("totalModal");
+      const totalUntungEl = document.getElementById("totalUntung");
+
+      tabelStok.innerHTML = "";
+      for (const [produk, jumlah] of Object.entries(stok)) {
+        tabelStok.innerHTML += `<tr><td class="border px-4 py-2">${produk}</td><td class="border px-4 py-2">${jumlah}</td></tr>`;
+      }
+
+      totalUangEl.textContent = totalUang.toLocaleString("id-ID");
+      totalModalEl.textContent = totalModal.toLocaleString("id-ID");
+      totalUntungEl.textContent = (totalUang - totalModal).toLocaleString("id-ID");
+    }
+
+    document.getElementById("formMasuk").addEventListener("submit", e => {
+      e.preventDefault();
+      const produk = document.getElementById("produkMasuk").value.trim();
+      const jumlah = Number(document.getElementById("jumlahMasuk").value);
+      if (produk && jumlah > 0) {
+        stok[produk] = (stok[produk] || 0) + jumlah;
+        localStorage.setItem("stok", JSON.stringify(stok));
+        updateUI();
+        e.target.reset();
+      }
+    });
+
+    document.getElementById("formKeluar").addEventListener("submit", e => {
+      e.preventDefault();
+      const produk = document.getElementById("produkKeluar").value.trim();
+      const jumlah = Number(document.getElementById("jumlahKeluar").value);
+      const harga = Number(document.getElementById("hargaKeluar").value);
+      if (produk && jumlah > 0 && harga > 0 && stok[produk] >= jumlah) {
+        stok[produk] -= jumlah;
+        totalUang += jumlah * harga;
+        localStorage.setItem("stok", JSON.stringify(stok));
+        localStorage.setItem("totalUang", totalUang);
+        updateUI();
+        e.target.reset();
+      } else {
+        alert("Stok tidak cukup atau data salah!");
+      }
+    });
+
+    document.getElementById("formModal").addEventListener("submit", e => {
+      e.preventDefault();
+      const uang = Number(document.getElementById("uangKeluar").value);
+      if (uang > 0) {
+        totalModal += uang;
+        localStorage.setItem("totalModal", totalModal);
+        updateUI();
+        e.target.reset();
+      }
+    });
+
+    updateUI();
+  </script>
+</body>
+</html>
